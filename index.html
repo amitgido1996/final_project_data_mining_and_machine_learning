@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>House Price Predictor</title>
+   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300&display=swap" rel="stylesheet">
+   <style>
+     body {
+       font-family: 'Heebo Light', sans-serif;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+     }
+     .form-group {
+       margin-bottom: 20px;
+     }
+     label {
+       display: block;
+       margin-bottom: 5px;
+     }
+     input[type="text"] {
+       padding: 5px;
+       width: 200px;
+     }
+     button[type="submit"] {
+       padding: 10px 20px;
+       background-color: #4CAF50;
+       color: white;
+       border: none;
+       cursor: pointer;
+       font-size: 16px;
+     }
+     button[type="submit"]:hover {
+       background-color: #45a049;
+     }
+   </style>
+</head>
+<body>
+   <div class="container">
+     <h1>House Price Predictor</h1>
+     {% if prediction_result %}
+       <div id="prediction-result">
+         <h2>Prediction Result:</h2>
+         <p>Prediction: {{ prediction_result }}</p>
+       </div>
+     {% else %}
+       <h2>Enter the house details:</h2>
+       <form id="prediction-form" action="{{ url_for('predict') }}" method="post">
+         <div class="form-group">
+           <label for="City">City:</label>
+           <input type="text" id="City" name="City" value="{{ city }}" required><br>
+         </div>
+         <div class="form-group">
+           <label for="type">Type:</label>
+           <input type="text" id="type" name="type" value="{{ house_type }}" required><br>
+         </div>
+         <div class="form-group">
+           <label for="room_number">Number of Rooms:</label>
+           <input type="text" id="room_number" name="room_number" value="{{ room_number }}" required><br>
+         </div>
+         <div class="form-group">
+           <label for="Area">Area:</label>
+           <input type="text" id="Area" name="Area" value="{{ area }}" required><br>
+         </div>
+         <div class="form-group">
+           <label for="Street">Street:</label>
+           <input type="text" id="Street" name="Street" value="{{ street }}" required><br>
+         </div>
+         <div class="form-group">
+           <label for="city_area">City Area:</label>
+           <input type="text" id="city_area" name="city_area" value="{{ city_area }}" required><br>
+         </div>
+         <button id="predict-btn" type="submit">Predict Price</button>
+       </form>
+     {% endif %}
+   </div>
+
+   <script>
+     // Prevent form submission from refreshing the page
+     document.getElementById("prediction-form").addEventListener("submit", function(event) {
+       event.preventDefault();
+       predictPrice();
+     });
+
+     // Function to send the form data and display the prediction result
+     function predictPrice() {
+       // Retrieve the form data
+       var form = document.getElementById("prediction-form");
+       var formData = new FormData(form);
+
+       // Send a POST request to the server
+       fetch("/predict", {
+         method: "POST",
+         body: formData
+       })
+       .then(response => response.text())
+       .then(data => {
+         // Update the prediction result on the page
+         document.getElementById("prediction-form").innerHTML = data;
+       });
+     }
+   </script>
+</body>
+</html>
